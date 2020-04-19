@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+    <!--{% for row in joined_1_n %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ row }}</a> <br/>
+              <small class="text-muted">{{ row.fname }} {{ row.lname }} {{ row.pname }}</small>
+            </div>
+           
+          </div>
+        </article>
+     {% endfor %}
+      -->
+	  {% for row in joined_m_n %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('assign', pno=row.pno, essn=row.essn) }}">{{ row.pname }} - {{row.fname}} {{row.lname}}</a> <br/>
+              <small class="text-muted">Project#: {{row.pno}} - SSN: {{row.ssn}}</small>
+            </div>
+           
+          </div>
+        </article>
+     {% endfor %}
+	
+{% endblock content %}
