@@ -35,8 +35,29 @@ regex1='^((((19|20)(([02468][048])|([13579][26]))-02-29))|((20[0-9][0-9])|(19[0-
 regex2='|(1[0-2]))-((0[1-9])|(1\d)|(2[0-8])))|((((0[13578])|(1[02]))-31)|(((0[1,3-9])|(1[0-2]))-(29|30)))))$'
 regex=regex1 + regex2
 
+expenses = list() 
 
+expense =dict() 
+expense['name'] = "Auto"
+expenses.append(expense) 
 
+expense =dict() 
+expense['name'] = "Utilities"
+expenses.append(expense)
+
+expense =dict() 
+expense['name'] = "Rent"
+expenses.append(expense)
+
+expense =dict() 
+expense['name'] = "Groceries"
+expenses.append(expense)
+
+expense =dict() 
+expense['name'] = "Restaurants"
+expenses.append(expense)
+
+expList = [(row['name'],row['name']) for row in expenses]
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
@@ -143,7 +164,29 @@ class AssignForm(FlaskForm):
             for combo in combos:
                 if str(combo.essn) == str(self.ssn.data):
                     raise ValidationError('This employee is already assigned to this project.')
-        
-        
-    
+					
+class BudgetForm(FlaskForm):
+	bName = StringField("Budget Name", validators = [DataRequired()])
+	sDate = DateField("Start Date", validators = [DataRequired()])
+	eDate = DateField("End Date", validators = [DataRequired()]) 
+	expenseType = SelectField("Expense Type", choices = expList)
+	submit = SubmitField('Create Budget')
+	
+class PaymentForm(FlaskForm):
+	pName = StringField("Payment Name", validators = [DataRequired()])
+	amount = IntegerField("Amount", validators = [DataRequired()]) 
+	date = DateField("Date", validators = [DataRequired()])
+	expenseType = SelectField("Expense Type", choices = expList)
+	submit = SubmitField('Add Payment')
+	
+	##needs work 
+	'''
+		def validate_expense(self, expenses):
+			combos = Works_On.query.filter_by(pno=self.pno.data)
+			if combos:
+				for combo in combos:
+					if str(combo.essn) == str(self.ssn.data):
+						raise ValidationError('This employee is already assigned to this project.')
+	'''
+
 

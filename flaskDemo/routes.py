@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, AssignForm
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, AssignForm, BudgetForm, PaymentForm
 from flaskDemo.models import User, Post, Department, Dependent, Dept_Locations, Employee, Project, Works_On
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
@@ -175,3 +175,23 @@ def delete_assignment(essn,pno):
     db.session.commit()
     flash('The assignment has been deleted!', 'success')
     return redirect(url_for('home'))
+
+@app.route("/budget/new")
+@login_required 
+def new_budget():
+	form = BudgetForm()
+	##TODO
+	if form.validate_on_submit(): 
+		return redirect(url_for('home'))
+	return render_template('create_budget.html', title='New Budget',
+						form=form, legend='New Budget')
+
+@app.route("/payment/new")
+@login_required 
+def new_payment():
+	form = PaymentForm()
+	## TODO 
+	if form.validate_on_submit(): 
+		return redirect(url_for('home'))
+	return render_template('create_payment.html', title='New Payment',
+						form=form, legend='New Payment')
