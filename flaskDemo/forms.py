@@ -167,6 +167,7 @@ class AssignForm(FlaskForm):
 					
 class BudgetForm(FlaskForm):
 	bName = StringField("Budget Name", validators = [DataRequired()])
+	amount = IntegerField("Amount", validators = [DataRequired()]) 
 	sDate = DateField("Start Date", validators = [DataRequired()])
 	eDate = DateField("End Date", validators = [DataRequired()]) 
 	expenseType = SelectField("Expense Type", choices = expList)

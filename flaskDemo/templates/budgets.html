@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+	<h1>Budgets</h1>
+	{% for budget in tbudgets %}
+		<article class="media content-section">
+		  <div class="media-body">
+			<div class="article-metadata">
+			  <a class="mr-2" href="#">{{ budget['name']}}</a>
+			  <small class="text-muted">Start Date: {{ budget['sdate']}}</small>
+			  <small class="text-muted">End Date: {{ budget['edate']}}</small>
+			</div>
+			<p class="article-content">{{ budget['expense']}}</p>
+			<p class="article-content">Spending Amount: ${{ budget['amount']}}</p>
+			<p class="article-content">Current Amount Spent: </p>
+		  </div>
+		</article>
+	{% endfor %}
+{% endblock content %}

@@ -9,6 +9,85 @@ from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 
 
+#Test display for payments
+payments = list()
+payment = dict()
+payment['name'] = "payment1"
+payment['amount'] = 50
+payment['date'] = "2020-01-01"
+payment['expense'] = "ExpenseID1"
+payments.append(payment) 
+
+payment = dict()
+payment['name'] = "payment2"
+payment['amount'] = 20
+payment['date'] = "2020-01-02"
+payment['expense'] = "ExpenseID2"
+payments.append(payment) 
+
+payment = dict()
+payment['name'] = "payment3"
+payment['amount'] = 40
+payment['date'] = "2020-01-03"
+payment['expense'] = "ExpenseID3"
+payments.append(payment) 
+
+payment = dict()
+payment['name'] = "payment4"
+payment['amount'] = 85
+payment['date'] = "2020-01-04"
+payment['expense'] = "ExpenseID4"
+payments.append(payment) 
+
+payment = dict()
+payment['name'] = "payment5"
+payment['amount'] = 23
+payment['date'] = "2020-01-05"
+payment['expense'] = "ExpenseID5"
+payments.append(payment) 
+
+#test display for budgets
+tbudgets = list()
+budget = dict()
+budget['name'] = "Budget0"
+budget['amount'] = 2000
+budget['sdate'] = "2020-01-01"
+budget['edate'] = "2020-02-01"
+budget['expense'] = "ExpenseID1"
+tbudgets.append(budget) 
+
+budget = dict()
+budget['name'] = "budget1"
+budget['amount'] = 3282
+budget['sdate'] = "2020-01-02"
+budget['edate'] = "2020-02-01"
+budget['expense'] = "ExpenseID1"
+tbudgets.append(budget) 
+
+budget = dict()
+budget['name'] = "budget2"
+budget['amount'] = 450
+budget['sdate'] = "2020-01-03"
+budget['edate'] = "2020-03-01"
+budget['expense'] = "ExpenseID1"
+tbudgets.append(budget) 
+
+budget = dict()
+budget['name'] = "budget3"
+budget['amount'] = 20000
+budget['sdate'] = "2020-01-04"
+budget['edate'] = "2020-02-01"
+budget['expense'] = "ExpenseID1"
+tbudgets.append(budget) 
+
+budget = dict()
+budget['name'] = "budget4"
+budget['amount'] = 4500
+budget['sdate'] = "2020-01-05"
+budget['edate'] = "2020-02-01"
+budget['expense'] = "ExpenseID1"
+tbudgets.append(budget) 
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -21,8 +100,9 @@ def home():
                .join(Project, Project.pnumber == Works_On.pno).add_columns(Project.pname, Project.pnumber)
     results = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
                 .add_columns(Employee.fname, Employee.lname)
-    return render_template('join.html', title='Join', joined_m_n=results2)
-   
+    ##return render_template('join.html', title='Join', joined_m_n=results2)
+    #TODO use query to either display all payments and do a join with expense and payments and maybe budgets too 
+    return render_template('home.html', title = 'Home', payments = payments)
 
 @app.route("/about")
 def about():
@@ -176,6 +256,13 @@ def delete_assignment(essn,pno):
     flash('The assignment has been deleted!', 'success')
     return redirect(url_for('home'))
 
+@app.route("/budgets")
+@login_required
+def budgets():
+	#TODO For this you need to calculate total amount spent. Will require a join with payments and budget. 
+	#...will need to match expense IDs and make sure date is within the budget time range. 
+	return render_template('budgets.html', title = 'Budgets', tbudgets = tbudgets)
+
 @app.route("/budget/new")
 @login_required 
 def new_budget():
@@ -190,7 +277,7 @@ def new_budget():
 @login_required 
 def new_payment():
 	form = PaymentForm()
-	## TODO 
+	##TODO 
 	if form.validate_on_submit(): 
 		return redirect(url_for('home'))
 	return render_template('create_payment.html', title='New Payment',
