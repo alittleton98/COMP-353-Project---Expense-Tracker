@@ -5,9 +5,11 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextA
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError,Regexp
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flaskDemo import db
-from flaskDemo.models import User, Department, getDepartment, getDepartmentFactory, Project, Employee, Works_On
+from flaskDemo.models import User, Expense, Payment, Budget, BudgetsFor
 from wtforms.fields.html5 import DateField
 
+
+'''
 ssns = Department.query.with_entities(Department.mgr_ssn).distinct()
 #  or could have used ssns = db.session.query(Department.mgr_ssn).distinct()
 # for that way, we would have imported db from flaskDemo, see above
@@ -34,6 +36,7 @@ myChoices = [(row['mgr_ssn'],row['mgr_ssn']) for row in results3]
 regex1='^((((19|20)(([02468][048])|([13579][26]))-02-29))|((20[0-9][0-9])|(19[0-9][0-9]))-((((0[1-9])'
 regex2='|(1[0-2]))-((0[1-9])|(1\d)|(2[0-8])))|((((0[13578])|(1[02]))-31)|(((0[1,3-9])|(1[0-2]))-(29|30)))))$'
 regex=regex1 + regex2
+'''
 
 expenses = list() 
 
@@ -113,7 +116,8 @@ class PostForm(FlaskForm):
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Post')
 
-    
+
+'''
 class DeptUpdateForm(FlaskForm):
 
 #    dnumber=IntegerField('Department Number', validators=[DataRequired()])
@@ -164,7 +168,9 @@ class AssignForm(FlaskForm):
             for combo in combos:
                 if str(combo.essn) == str(self.ssn.data):
                     raise ValidationError('This employee is already assigned to this project.')
-					
+
+'''
+		
 class BudgetForm(FlaskForm):
 	bName = StringField("Budget Name", validators = [DataRequired()])
 	amount = IntegerField("Amount", validators = [DataRequired()]) 
