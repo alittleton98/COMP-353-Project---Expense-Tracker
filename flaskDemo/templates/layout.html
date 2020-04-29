@@ -37,7 +37,7 @@
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('new_assign') }}">Assign</a>
 				<a class="nav-item nav-link" href="{{ url_for('new_budget') }}">Create a Budget</a>
-			    <a class="nav-item nav-link" href="{{ url_for('new_payment') }}">Submit an Payment</a>
+			    <a class="nav-item nav-link" href="{{ url_for('new_payment') }}">Submit a Payment</a>
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
               {% else %}

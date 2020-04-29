@@ -95,11 +95,13 @@ def home():
     #return render_template('dept_home.html', outString = results)
     #posts = Post.query.all()
     #return render_template('home.html', posts=posts)
-    results2 = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
+    '''
+	results2 = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
                .add_columns(Employee.fname, Employee.lname, Employee.ssn, Works_On.essn, Works_On.pno) \
                .join(Project, Project.pnumber == Works_On.pno).add_columns(Project.pname, Project.pnumber)
     results = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
                 .add_columns(Employee.fname, Employee.lname)
+	'''
     ##return render_template('join.html', title='Join', joined_m_n=results2)
     #TODO use query to either display all payments and do a join with expense and payments and maybe budgets too 
     return render_template('home.html', title = 'Home', payments = payments)
@@ -116,7 +118,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(username=form.username.data, password=hashed_password, name = form.fullname.data)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -130,13 +132,13 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+            flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 

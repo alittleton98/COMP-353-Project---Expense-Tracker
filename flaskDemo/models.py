@@ -14,7 +14,7 @@ def load_user(user_id):
 
 
 class User(db.Model, UserMixin):
-    __table__ = db.Model.metadata.tables['User']
+    __table__ = db.Model.metadata.tables['user']
     '''
     __table_args__ = {'extend_existing': True}
     userId = db.Column(db.Integer, primary_key=True)
@@ -30,7 +30,7 @@ class User(db.Model, UserMixin):
     '''
 
 class Expense(db.Model):
-    __table__ = db.Model.metadata.tables['Expense']
+    __table__ = db.Model.metadata.tables['expense']
     '''
     __table_args__ = {'extend_existing': True}
     expenseId = db.Column(db.Integer, primary_key=True)
@@ -42,7 +42,7 @@ class Expense(db.Model):
     '''
 
 class Payment(db.Model):
-    __table__ = db.Model.metadata.tables['Payment']
+    __table__ = db.Model.metadata.tables['payment']
     
     '''
     __table_args__ = {'extend_existing': True}
@@ -58,7 +58,7 @@ class Payment(db.Model):
     '''
 
 class Budget(db.Model):
-    __table__ = db.Model.metadata.tables['Budget']
+    __table__ = db.Model.metadata.tables['budget']
     '''
     __table_args__ = {'extend_existing': True}
     budgetId = db.Column(db.Integer, primary_key=True)
@@ -72,7 +72,7 @@ class Budget(db.Model):
     '''
 
 class BudgetsFor(db.Model):
-    __table__ = db.Model.metadata.tables['BudgetsFor']
+    __table__ = db.Model.metadata.tables['budgetsfor']
 
 
 
