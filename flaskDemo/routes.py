@@ -188,7 +188,7 @@ def budgets():
 	#...will need to match expense IDs and make sure date is within the budget time range. 
     
     results = Budget.query.join(Payment, Payment.expenseID == Budget.expenseID) \
-                    .add_columns(Budget.budgetID, Budget.budgetName, Budget.amount, Budget.startDate, Budget.endDate, Payment.description, Payment.amount, Payment.date) \
+                    .add_columns(Budget.budgetID, Budget.budgetName, Budget.amount, Budget.startDate, Budget.endDate, Payment.description, Payment.amount.label("payAmount"), Payment.date) \
                     .filter(Budget.userID == current_user.id).all()
     
     return render_template('budgets.html', title = 'Budgets', budgets = results)
