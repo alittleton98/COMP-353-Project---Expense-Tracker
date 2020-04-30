@@ -96,12 +96,12 @@ def home():
     #posts = Post.query.all()
     #return render_template('home.html', posts=posts)
     '''
-	results2 = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
+    results2 = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
                .add_columns(Employee.fname, Employee.lname, Employee.ssn, Works_On.essn, Works_On.pno) \
                .join(Project, Project.pnumber == Works_On.pno).add_columns(Project.pname, Project.pnumber)
     results = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
                 .add_columns(Employee.fname, Employee.lname)
-	'''
+    '''
     ##return render_template('join.html', title='Join', joined_m_n=results2)
     #TODO use query to either display all payments and do a join with expense and payments and maybe budgets too 
     return render_template('home.html', title = 'Home', payments = payments)
@@ -118,7 +118,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, password=hashed_password, name = form.fullname.data)
+        user = User(username=form.username.data, password=hashed_password, name=form.fullname.data)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -167,22 +167,48 @@ def save_picture(form_picture):
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file
         current_user.username = form.username.data
-        current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
         form.username.data = current_user.username
-        form.email.data = current_user.email
-    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    return render_template('account.html', title='Account',
-                           image_file=image_file, form=form)
+    return render_template('account.html', title='Account', form=form)
+
+@app.route("/budgets")
+@login_required
+def budgets():
+	#TODO For this you need to calculate total amount spent. Will require a join with payments and budget. 
+	#...will need to match expense IDs and make sure date is within the budget time range. 
+	return render_template('budgets.html', title = 'Budgets', tbudgets = tbudgets)
+
+@app.route("/budget/new")
+@login_required 
+def new_budget():
+    form = BudgetForm()
+    if form.validate_on_submit():
+        assign = Budget(budgetName = form.bName.data, budgetType = form.expenseType.data, startDate = form.sDate.data, endDate = form.eDate.data, amount = form.amount.data)
+        db.session.add(assign)
+        db.session.commit()
+        flash('You have created a new budget!', 'Success')
+        return redirect(url_for('home'))
+    return render_template('create_budget.html', title='New Budget', form=form, legend='New Budget')
 
 
+@app.route("/payment/new")
+@login_required 
+def new_payment():
+    form = PaymentForm()
+    if form.validate_on_submit():
+        assign = Payment(description = form.pName.data, amount = form.amount.data, date = form.date.data)
+        db.session.add(assign)
+        db.session.commit()
+        flash('You have added a new Payment!', 'Success')
+        return redirect(url_for('home'))
+    return render_template('create_payment.html', title='New Payment', form=form, legend='New Payment')
+
+
+'''
 @app.route("/assign/new", methods=['GET', 'POST'])
 @login_required
 def new_assign():
@@ -195,7 +221,6 @@ def new_assign():
         return redirect(url_for('home'))
     return render_template('create_dept.html', title='Assign Employee',
                            form=form, legend='Assign Employee')
-
 
 
 @app.route("/assign/<pno>/<essn>")
@@ -257,30 +282,5 @@ def delete_assignment(essn,pno):
     db.session.commit()
     flash('The assignment has been deleted!', 'success')
     return redirect(url_for('home'))
+'''
 
-@app.route("/budgets")
-@login_required
-def budgets():
-	#TODO For this you need to calculate total amount spent. Will require a join with payments and budget. 
-	#...will need to match expense IDs and make sure date is within the budget time range. 
-	return render_template('budgets.html', title = 'Budgets', tbudgets = tbudgets)
-
-@app.route("/budget/new")
-@login_required 
-def new_budget():
-	form = BudgetForm()
-	##TODO
-	if form.validate_on_submit(): 
-		return redirect(url_for('home'))
-	return render_template('create_budget.html', title='New Budget',
-						form=form, legend='New Budget')
-
-@app.route("/payment/new")
-@login_required 
-def new_payment():
-	form = PaymentForm()
-	##TODO 
-	if form.validate_on_submit(): 
-		return redirect(url_for('home'))
-	return render_template('create_payment.html', title='New Payment',
-						form=form, legend='New Payment')

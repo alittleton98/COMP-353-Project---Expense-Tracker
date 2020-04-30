@@ -6,15 +6,13 @@ from sqlalchemy import orm
 
 db.Model.metadata.reflect(db.engine)
 
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 
 class User(db.Model, UserMixin):
-    __table__ = db.Model.metadata.tables['user']
+    __table__ = db.Model.metadata.tables['User']
     '''
     __table_args__ = {'extend_existing': True}
     userId = db.Column(db.Integer, primary_key=True)
@@ -30,7 +28,7 @@ class User(db.Model, UserMixin):
     '''
 
 class Expense(db.Model):
-    __table__ = db.Model.metadata.tables['expense']
+    __table__ = db.Model.metadata.tables['Expense']
     '''
     __table_args__ = {'extend_existing': True}
     expenseId = db.Column(db.Integer, primary_key=True)
@@ -42,7 +40,7 @@ class Expense(db.Model):
     '''
 
 class Payment(db.Model):
-    __table__ = db.Model.metadata.tables['payment']
+    __table__ = db.Model.metadata.tables['Payment']
     
     '''
     __table_args__ = {'extend_existing': True}
@@ -58,7 +56,7 @@ class Payment(db.Model):
     '''
 
 class Budget(db.Model):
-    __table__ = db.Model.metadata.tables['budget']
+    __table__ = db.Model.metadata.tables['Budget']
     '''
     __table_args__ = {'extend_existing': True}
     budgetId = db.Column(db.Integer, primary_key=True)
@@ -72,7 +70,10 @@ class Budget(db.Model):
     '''
 
 class BudgetsFor(db.Model):
-    __table__ = db.Model.metadata.tables['budgetsfor']
+    __table_args__ = {'extend_existing': True}
+    budgetID = db.Column(db.Integer, db.ForeignKey("Budget.budgetID"), primary_key=True)
+    expenseID = db.Column(db.Integer,db.ForeignKey("Expense.expenseID"),primary_key=True)
+    
 
 
 
