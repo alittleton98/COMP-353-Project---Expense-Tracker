@@ -105,7 +105,9 @@ def home():
     if current_user.is_authenticated:
         results = Payment.query.join(Expense, Payment.expenseID == Expense.expenseID) \
                     .add_columns(Payment.description, Payment.date, Payment.amount, Expense.expenseID, Expense.expenseType) \
-                    .filter(Payment.userID == current_user.id).all()
+                    .join(User, Payment.userID == User.id) \
+                    .add_columns(Payment.userID, User.id, User.username) \
+                    .filter((Payment.userID == current_user.id) | (User.username == current_user.username)).all()
     else:
         return redirect(url_for('register'))
     ##return render_template('join.html', title='Join', joined_m_n=results2)
@@ -190,6 +192,7 @@ def budgets():
     results = Budget.query.join(Payment, Payment.expenseID == Budget.expenseID) \
                     .add_columns(Budget.budgetID, Budget.budgetName, Budget.amount, Budget.startDate, Budget.endDate, Payment.description, Payment.amount.label("payAmount"), Payment.date) \
                     .filter(Budget.userID == current_user.id).all()
+    
     
     return render_template('budgets.html', title = 'Budgets', budgets = results)
 
