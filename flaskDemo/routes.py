@@ -247,7 +247,7 @@ def update_budget(budgetID):
         budget.amount=form.amount.data
         budget.startDate=form.sDate.data
         budget.endDate=form.eDate.data
-        budget.expenseType=form.expenseType.data
+        budget.expenseID=form.expenseType.data
         db.session.commit()
         flash('Your budget has been updated!', 'success')
         return redirect(url_for('budget', budgetID=budgetID))
@@ -256,7 +256,7 @@ def update_budget(budgetID):
         form.amount.data = budget.amount
         form.sDate.data = budget.startDate
         form.eDate.data = budget.endDate
-        form.expenseType.data = budget.expenseType
+        form.expenseType.data = budget.expenseID
     return render_template('create_budget.html', title='Update Budget',
                            form=form, legend='Update Budget')
 
