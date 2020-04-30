@@ -132,12 +132,6 @@ class BudgetUpdateForm(FlaskForm):
     expenseType = SelectField("Expense Type", choices = expenseChoices, coerce=int)
     submit = SubmitField('Update Budget')
 
-    def validate_bName(self, bName):    # apparently in the company DB, dname is specified as unique
-         budget = Budget.query.filter_by(budgetName=bName.data).first()
-         if budget and (str(budget.budgetID) != str(self.budgetID.data)):
-             raise ValidationError('That department name is already being used. Please choose a different name.')
-
-
 class BudgetForm(BudgetUpdateForm):
     submit = SubmitField('Create Budget')
 	
