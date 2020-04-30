@@ -102,9 +102,12 @@ def home():
     results = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
                 .add_columns(Employee.fname, Employee.lname)
     '''
+    results = Payment.query.join(Expense, Payment.expenseID == Expense.expenseID) \
+                .add_columns(Payment.description, Payment.date, Payment.amount, Expense.expenseID, Expense.expenseType) \
+                .filter(Payment.userID == current_user.id).all()
     ##return render_template('join.html', title='Join', joined_m_n=results2)
     #TODO use query to either display all payments and do a join with expense and payments and maybe budgets too 
-    return render_template('home.html', title = 'Home', payments = payments)
+    return render_template('home.html', title = 'Home', payments = results, expenseTypes = results)
 
 @app.route("/about")
 def about():
@@ -182,7 +185,7 @@ def budgets():
 	#...will need to match expense IDs and make sure date is within the budget time range. 
 	return render_template('budgets.html', title = 'Budgets', tbudgets = tbudgets)
 
-@app.route("/budget/new")
+@app.route("/budget/new", methods=['GET', 'POST'])
 @login_required 
 def new_budget():
     form = BudgetForm()
@@ -195,12 +198,12 @@ def new_budget():
     return render_template('create_budget.html', title='New Budget', form=form, legend='New Budget')
 
 
-@app.route("/payment/new")
+@app.route("/payment/new", methods=['GET', 'POST'])
 @login_required 
 def new_payment():
     form = PaymentForm()
     if form.validate_on_submit():
-        assign = Payment(description = form.pName.data, amount = form.amount.data, date = form.date.data)
+        assign = Payment(userID = current_user.id, expenseID = form.expenseType.data, description = form.pName.data, amount = form.amount.data, date = form.date.data)
         db.session.add(assign)
         db.session.commit()
         flash('You have added a new Payment!', 'Success')

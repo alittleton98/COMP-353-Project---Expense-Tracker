@@ -6,11 +6,11 @@
 			<article class="media content-section">
 			  <div class="media-body">
 				<div class="article-metadata">
-				  <a class="mr-2" href="#">{{ payment['name']}}</a>
-				  <small class="text-muted">{{ payment['date']}}</small>
+				  <a class="mr-2" href="#">{{ payment.description}}</a>
+				  <small class="text-muted">{{ payment.date}}</small>
 				</div>
-				<p class="article-content">{{ payment['expense']}}</p>
-				<p class="article-content">Amount: ${{ payment['amount']}}</p>
+				<p class="article-content">Expense: {{ payment.expenseType}}</p>
+				<p class="article-content">Amount: ${{ payment.amount}}</p>
 			  </div>
 			</article>
 		{% endfor %}

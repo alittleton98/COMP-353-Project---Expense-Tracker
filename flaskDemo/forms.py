@@ -38,29 +38,12 @@ regex2='|(1[0-2]))-((0[1-9])|(1\d)|(2[0-8])))|((((0[13578])|(1[02]))-31)|(((0[1,
 regex=regex1 + regex2
 '''
 
-expenses = list() 
-
-expense =dict() 
-expense['name'] = "Auto"
-expenses.append(expense) 
-
-expense =dict() 
-expense['name'] = "Utilities"
-expenses.append(expense)
-
-expense =dict() 
-expense['name'] = "Rent"
-expenses.append(expense)
-
-expense =dict() 
-expense['name'] = "Groceries"
-expenses.append(expense)
-
-expense =dict() 
-expense['name'] = "Restaurants"
-expenses.append(expense)
-
-expList = [(row['name'],row['name']) for row in expenses]
+expenses = Expense.query.with_entities(Expense.expenseType, Expense.expenseID).distinct()
+results = list()
+for row in expenses:
+    rowDict=row._asdict()
+    results.append(rowDict)
+expenseChoices = [(row['expenseID'], row['expenseType']) for row in results]
 
 class RegistrationForm(FlaskForm):
     fullname = StringField('Full Name', 
@@ -168,20 +151,20 @@ class AssignForm(FlaskForm):
                     raise ValidationError('This employee is already assigned to this project.')
 
 '''
-		
+
 class BudgetForm(FlaskForm):
 	bName = StringField("Budget Name", validators = [DataRequired()])
 	amount = IntegerField("Amount", validators = [DataRequired()]) 
 	sDate = DateField("Start Date", validators = [DataRequired()])
 	eDate = DateField("End Date", validators = [DataRequired()]) 
-	expenseType = SelectField("Expense Type", choices = expList)
+	expenseType = SelectField("Expense Type", choices = expenseChoices)
 	submit = SubmitField('Create Budget')
 	
 class PaymentForm(FlaskForm):
 	pName = StringField("Payment Name", validators = [DataRequired()])
 	amount = IntegerField("Amount", validators = [DataRequired()]) 
 	date = DateField("Date", validators = [DataRequired()])
-	expenseType = SelectField("Expense Type", choices = expList)
+	expenseType = SelectField("Expense Type", choices = expenseChoices, coerce=int)
 	submit = SubmitField('Add Payment')
 	
 	##needs work 
