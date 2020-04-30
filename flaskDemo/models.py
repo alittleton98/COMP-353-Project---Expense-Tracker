@@ -75,9 +75,6 @@ class BudgetsFor(db.Model):
     expenseID = db.Column(db.Integer,db.ForeignKey("Expense.expenseID"),primary_key=True)
     
 
-
-
-
 '''
 class Post(db.Model):
      __table_args__ = {'extend_existing': True}

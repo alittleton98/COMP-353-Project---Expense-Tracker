@@ -99,34 +99,6 @@ class PostForm(FlaskForm):
 
 
 '''
-class DeptUpdateForm(FlaskForm):
-
-#    dnumber=IntegerField('Department Number', validators=[DataRequired()])
-    dnumber = HiddenField("")
-
-    dname=StringField('Department Name:', validators=[DataRequired(),Length(max=15)])
-#  Commented out using a text field, validated with a Regexp.  That also works, but a hassle to enter ssn.
-#    mgr_ssn = StringField("Manager's SSN", validators=[DataRequired(),Regexp('^(?!000|666)[0-8][0-9]{2}(?!00)[0-9]{2}(?!0000)[0-9]{4}$', message="Please enter 9 digits for a social security.")])
-
-#  One of many ways to use SelectField or QuerySelectField.  Lots of issues using those fields!!
-    mgr_ssn = SelectField("Manager's SSN", choices=myChoices)  # myChoices defined at top
-    
-# the regexp works, and even gives an error message
-#    mgr_start=DateField("Manager's Start Date:  yyyy-mm-dd",validators=[Regexp(regex)])
-#    mgr_start = DateField("Manager's Start Date")
-
-#    mgr_start=DateField("Manager's Start Date", format='%Y-%m-%d')
-    mgr_start = DateField("Manager's start date:", format='%Y-%m-%d')  # This is using the html5 date picker (imported)
-    submit = SubmitField('Update this department')
-
-
-# got rid of def validate_dnumber
-
-    def validate_dname(self, dname):    # apparently in the company DB, dname is specified as unique
-         dept = Department.query.filter_by(dname=dname.data).first()
-         if dept and (str(dept.dnumber) != str(self.dnumber.data)):
-             raise ValidationError('That department name is already being used. Please choose a different name.')
-
 
 class DeptForm(DeptUpdateForm):
 
@@ -152,13 +124,22 @@ class AssignForm(FlaskForm):
 
 '''
 
-class BudgetForm(FlaskForm):
-	bName = StringField("Budget Name", validators = [DataRequired()])
-	amount = IntegerField("Amount", validators = [DataRequired()]) 
-	sDate = DateField("Start Date", validators = [DataRequired()])
-	eDate = DateField("End Date", validators = [DataRequired()]) 
-	expenseType = SelectField("Expense Type", choices = expenseChoices)
-	submit = SubmitField('Create Budget')
+class BudgetUpdateForm(FlaskForm):
+    bName=StringField('Budget Name:', validators=[DataRequired(),Length(max=15)])
+    amount = IntegerField("Amount", validators = [DataRequired()])
+    sDate = DateField("Start Date", validators = [DataRequired()])
+    eDate = DateField("End Date", validators = [DataRequired()])
+    expenseType = SelectField("Expense Type", choices = expenseChoices, coerce=int)
+    submit = SubmitField('Update Budget')
+
+    def validate_bName(self, bName):    # apparently in the company DB, dname is specified as unique
+         budget = Budget.query.filter_by(budgetName=bName.data).first()
+         if budget and (str(budget.budgetID) != str(self.budgetID.data)):
+             raise ValidationError('That department name is already being used. Please choose a different name.')
+
+
+class BudgetForm(BudgetUpdateForm):
+    submit = SubmitField('Create Budget')
 	
 class PaymentForm(FlaskForm):
 	pName = StringField("Payment Name", validators = [DataRequired()])

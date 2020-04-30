@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, BudgetForm, PaymentForm
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, BudgetForm, PaymentForm, BudgetUpdateForm
 from flaskDemo.models import User, Expense, Payment, Budget, BudgetsFor
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
@@ -102,9 +102,12 @@ def home():
     results = Employee.query.join(Works_On,Employee.ssn == Works_On.essn) \
                 .add_columns(Employee.fname, Employee.lname)
     '''
-    results = Payment.query.join(Expense, Payment.expenseID == Expense.expenseID) \
-                .add_columns(Payment.description, Payment.date, Payment.amount, Expense.expenseID, Expense.expenseType) \
-                .filter(Payment.userID == current_user.id).all()
+    if current_user.is_authenticated:
+        results = Payment.query.join(Expense, Payment.expenseID == Expense.expenseID) \
+                    .add_columns(Payment.description, Payment.date, Payment.amount, Expense.expenseID, Expense.expenseType) \
+                    .filter(Payment.userID == current_user.id).all()
+    else:
+        return redirect(url_for('register'))
     ##return render_template('join.html', title='Join', joined_m_n=results2)
     #TODO use query to either display all payments and do a join with expense and payments and maybe budgets too 
     return render_template('home.html', title = 'Home', payments = results, expenseTypes = results)
@@ -183,14 +186,19 @@ def account():
 def budgets():
 	#TODO For this you need to calculate total amount spent. Will require a join with payments and budget. 
 	#...will need to match expense IDs and make sure date is within the budget time range. 
-	return render_template('budgets.html', title = 'Budgets', tbudgets = tbudgets)
+    
+    results = Budget.query.join(Payment, Payment.expenseID == Budget.expenseID) \
+                    .add_columns(Budget.budgetID, Budget.budgetName, Budget.amount, Budget.startDate, Budget.endDate, Payment.description, Payment.amount, Payment.date) \
+                    .filter(Budget.userID == current_user.id).all()
+    
+    return render_template('budgets.html', title = 'Budgets', budgets = results)
 
 @app.route("/budget/new", methods=['GET', 'POST'])
 @login_required 
 def new_budget():
     form = BudgetForm()
     if form.validate_on_submit():
-        assign = Budget(budgetName = form.bName.data, budgetType = form.expenseType.data, startDate = form.sDate.data, endDate = form.eDate.data, amount = form.amount.data)
+        assign = Budget(userID = current_user.id, budgetName = form.bName.data, expenseID = form.expenseType.data, startDate = form.sDate.data, endDate = form.eDate.data, amount = form.amount.data)
         db.session.add(assign)
         db.session.commit()
         flash('You have created a new budget!', 'Success')
@@ -209,6 +217,48 @@ def new_payment():
         flash('You have added a new Payment!', 'Success')
         return redirect(url_for('home'))
     return render_template('create_payment.html', title='New Payment', form=form, legend='New Payment')
+
+@app.route("/budgets/<budgetID>")
+@login_required
+def budget(budgetID):
+    budget = Budget.query.get_or_404(budgetID)
+    return render_template('budget.html', title=budget.budgetName, budget=budget, now=datetime.utcnow())
+
+@app.route("/budgets/<budgetID>/delete", methods=['POST'])
+@login_required
+def delete_budget(budgetID):
+    budget = Budget.query.get_or_404(budgetID)
+    db.session.delete(budget)
+    db.session.commit()
+    flash('The budget has been deleted!', 'success')
+    return redirect(url_for('home'))
+
+
+@app.route("/budget/<budgetID>/update", methods=['GET', 'POST'])
+@login_required
+def update_budget(budgetID):
+    budget = Budget.query.get_or_404(budgetID)
+    currentBudget = budget.budgetName
+
+    form = BudgetUpdateForm()
+    if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
+        if currentBudget !=form.bName.data:
+            budget.budgetName=form.bName.data
+        budget.amount=form.amount.data
+        budget.startDate=form.sDate.data
+        budget.endDate=form.eDate.data
+        budget.expenseType=form.expenseType.data
+        db.session.commit()
+        flash('Your budget has been updated!', 'success')
+        return redirect(url_for('budget', budgetID=budgetID))
+    elif request.method == 'GET':              # notice we are not passing the dnumber to the form
+        form.bName.data = budget.budgetName
+        form.amount.data = budget.amount
+        form.sDate.data = budget.startDate
+        form.eDate.data = budget.endDate
+        form.expenseType.data = budget.expenseType
+    return render_template('create_budget.html', title='Update Budget',
+                           form=form, legend='Update Budget')
 
 
 '''
@@ -232,41 +282,6 @@ def assign(pno, essn):
     assign = Works_On.query.get_or_404([essn,pno])
     return render_template('assign.html', title = str(assign.essn) + "_" + str(assign.pno), assign = assign, now = datetime.utcnow)
 
-
-@app.route("/dept/<dnumber>")
-@login_required
-def dept(dnumber):
-    dept = Department.query.get_or_404(dnumber)
-    return render_template('dept.html', title=dept.dname, dept=dept, now=datetime.utcnow())
-
-
-@app.route("/dept/<dnumber>/update", methods=['GET', 'POST'])
-@login_required
-def update_dept(dnumber):
-    dept = Department.query.get_or_404(dnumber)
-    currentDept = dept.dname
-
-    form = DeptUpdateForm()
-    if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
-        if currentDept !=form.dname.data:
-            dept.dname=form.dname.data
-        dept.mgr_ssn=form.mgr_ssn.data
-        dept.mgr_start=form.mgr_start.data
-        db.session.commit()
-        flash('Your department has been updated!', 'success')
-        return redirect(url_for('dept', dnumber=dnumber))
-    elif request.method == 'GET':              # notice we are not passing the dnumber to the form
-
-        form.dnumber.data = dept.dnumber
-        form.dname.data = dept.dname
-        form.mgr_ssn.data = dept.mgr_ssn
-        form.mgr_start.data = dept.mgr_start
-    return render_template('create_dept.html', title='Update Department',
-                           form=form, legend='Update Department')
-
-
-
-
 @app.route("/dept/<dnumber>/delete", methods=['POST'])
 @login_required
 def delete_dept(dnumber):
@@ -276,14 +291,6 @@ def delete_dept(dnumber):
     flash('The department has been deleted!', 'success')
     return redirect(url_for('home'))
     
-    
-@app.route("/assign/<pno>/<essn>/delete", methods=['POST'])
-@login_required
-def delete_assignment(essn,pno):
-    assign = Works_On.query.get_or_404([essn,pno])
-    db.session.delete(assign)
-    db.session.commit()
-    flash('The assignment has been deleted!', 'success')
-    return redirect(url_for('home'))
+
 '''
 
