@@ -2,6 +2,7 @@
 {% block content %}
 	{% if current_user.is_authenticated %}
 		<h1>Payments</h1>
+		<h2>Total amount spent and logged using Expense Tracker: {{total['amount']}}</h2>
 		{% for payment in payments %}
 			<article class="media content-section">
 			  <div class="media-body">
