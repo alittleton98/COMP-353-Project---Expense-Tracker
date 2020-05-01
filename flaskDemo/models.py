@@ -12,7 +12,7 @@ def load_user(user_id):
 
 
 class User(db.Model, UserMixin):
-    __table__ = db.Model.metadata.tables['user']
+    __table__ = db.Model.metadata.tables['User']
     '''
     __table_args__ = {'extend_existing': True}
     userId = db.Column(db.Integer, primary_key=True)
@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     '''
 
 class Expense(db.Model):
-    __table__ = db.Model.metadata.tables['expense']
+    __table__ = db.Model.metadata.tables['Expense']
     '''
     __table_args__ = {'extend_existing': True}
     expenseId = db.Column(db.Integer, primary_key=True)
@@ -40,7 +40,7 @@ class Expense(db.Model):
     '''
 
 class Payment(db.Model):
-    __table__ = db.Model.metadata.tables['payment']
+    __table__ = db.Model.metadata.tables['Payment']
     
     '''
     __table_args__ = {'extend_existing': True}
@@ -56,7 +56,7 @@ class Payment(db.Model):
     '''
 
 class Budget(db.Model):
-    __table__ = db.Model.metadata.tables['budget']
+    __table__ = db.Model.metadata.tables['Budget']
     '''
     __table_args__ = {'extend_existing': True}
     budgetId = db.Column(db.Integer, primary_key=True)
@@ -74,45 +74,3 @@ class BudgetsFor(db.Model):
     budgetID = db.Column(db.Integer, db.ForeignKey("budget.budgetID"), primary_key=True)
     expenseID = db.Column(db.Integer,db.ForeignKey("expense.expenseID"),primary_key=True)
     
-
-'''
-class Post(db.Model):
-     __table_args__ = {'extend_existing': True}
-     id = db.Column(db.Integer, primary_key=True)
-     title = db.Column(db.String(100), nullable=False)
-     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-     content = db.Column(db.Text, nullable=False)
-     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-     def __repr__(self):
-         return f"Post('{self.title}', '{self.date_posted}')"
-
-class Dependent(db.Model):
-    __table__ = db.Model.metadata.tables['dependent']
-    
-class Department(db.Model):
-    __table__ = db.Model.metadata.tables['department']
-
-# used for query_factory
-def getDepartment(columns=None):
-    u = Department.query
-    if columns:
-        u = u.options(orm.load_only(*columns))
-    return u
-
-def getDepartmentFactory(columns=None):
-    return partial(getDepartment, columns=columns)
-
-class Dept_Locations(db.Model):
-    __table__ = db.Model.metadata.tables['dept_locations']
-    
-class Employee(db.Model):
-    __table__ = db.Model.metadata.tables['employee']
-class Project(db.Model):
-    __table__ = db.Model.metadata.tables['project']
-class Works_On(db.Model):
-    __table__ = db.Model.metadata.tables['works_on']
-
-    
-'''
-  
